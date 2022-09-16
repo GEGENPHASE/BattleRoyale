@@ -1,6 +1,5 @@
-package com.gegenphase.battleroyale.loot.lootclasses;
+package com.gegenphase.battleroyale.loot.lootclasses.materialien;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;

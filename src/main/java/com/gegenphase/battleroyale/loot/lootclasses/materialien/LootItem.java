@@ -1,4 +1,4 @@
-package com.gegenphase.battleroyale.loot.lootclasses;
+package com.gegenphase.battleroyale.loot.lootclasses.materialien;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

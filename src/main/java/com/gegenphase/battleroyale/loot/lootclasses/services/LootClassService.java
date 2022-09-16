@@ -1,17 +1,16 @@
-package com.gegenphase.battleroyale.loot.lootclasses;
+package com.gegenphase.battleroyale.loot.lootclasses.services;
 
 import com.gegenphase.battleroyale.config.MainConfig;
-import org.bukkit.inventory.ItemStack;
+import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootClass;
 
 import java.io.File;
-import java.lang.invoke.CallSite;
 import java.util.*;
 
 /**
  * @author GEGENPHASE
  * @version 12.09.2022
  **/
-public class LootClassService
+public class LootClassService implements ILootClassService
 {
     /*
      * Feldvariablen
@@ -28,12 +27,7 @@ public class LootClassService
         _lootclasses = _fileService.load();
     }
 
-    /**
-     * Bekomme eine LootKlasse von einem Namen.
-     *
-     * @param lc Die gesuchte LootKlasse.
-     * @return Die LootKlasse als {@link LootClass}.
-     */
+    @Override
     public LootClass getLootClass(String lc)
     {
         if (lc.equalsIgnoreCase("any"))
@@ -51,30 +45,19 @@ public class LootClassService
         return _lootclasses.get(lc);
     }
 
-    /**
-     * Prüfe, ob es eine angegebene Lootklasse unter einem Namen gibt oder nicht.
-     *
-     * @param lc Die zu prüfende Lootklasse.
-     * @return Wahr, wenn es diese Lootklasse im Bestand gibt und falsch wenn nicht. Gibt für "any" wahr zurück.
-     */
+    @Override
     public boolean exists(String lc)
     {
         return lc.equals("any") || _lootclasses.containsKey(lc);
     }
 
-    /**
-     * Lade den Bestand von der Festplatte neu.
-     */
+    @Override
     public void load()
     {
         _lootclasses = _fileService.load();
     }
 
-    /**
-     * Bekomme alle gültigen Lootklassennamen.
-     *
-     * @return Die Namen der Lootklassen.
-     */
+    @Override
     public Set<String> getLootClassKeys()
     {
         return new HashSet<>(_lootclasses.keySet());

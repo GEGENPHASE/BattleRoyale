@@ -1,5 +1,7 @@
-package com.gegenphase.battleroyale.loot.lootclasses;
+package com.gegenphase.battleroyale.loot.lootclasses.services;
 
+import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootClass;
+import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootItem;
 import com.gegenphase.battleroyale.util.messages.Messages;
 import com.shampaggon.crackshot.CSUtility;
 import org.bukkit.Bukkit;
@@ -11,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
