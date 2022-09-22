@@ -1,5 +1,6 @@
 package com.gegenphase.battleroyale.config;
 
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -29,6 +30,11 @@ public class MainConfig
     public static double CUSTOM2_PCT_SPAWN;
     public static boolean CUSTOM2_SPAWN_WHEN_EMPTY;
     public static String CUSTOM2_LOOTCLASS;
+    public static boolean LOOTCONTAINER_ALWAYS_BREAK_ON_EXIT;
+    public static boolean LOOTCONTAINER_EMPTY_BREAK_ON_EXIT;
+    public static boolean LOOTCONTAINER_DROP_ITEMS_ON_BREAK;
+    public static boolean LOOTCONTAINER_SEALED_PARTICLE;
+    public static boolean LOOTCONTAINER_SEALED_SOUND;
 
     static
     {
@@ -37,6 +43,12 @@ public class MainConfig
         GLOBAL_SPAWN_WHEN_EMPTY = false;
 
         ALLOW_RANDOM_CLASS_TO_BE_CHOSEN_IN_ANY = false;
+        LOOTCONTAINER_ALWAYS_BREAK_ON_EXIT = false;
+        LOOTCONTAINER_DROP_ITEMS_ON_BREAK = true;
+        LOOTCONTAINER_EMPTY_BREAK_ON_EXIT = true;
+
+        LOOTCONTAINER_SEALED_PARTICLE = true;
+        LOOTCONTAINER_SEALED_SOUND = true;
 
         DEFAULT_DENSITY = 0.5D;
         DEFAULT_PCT_SPAWN = 0.5D;
@@ -76,11 +88,17 @@ public class MainConfig
 
     private void setup()
     {
+        _config.addDefault("Loot.Container.Appearance.DropItemsOnBreak", true);
+        _config.addDefault("Loot.Container.Appearance.AlwaysBreakOnExit", false);
+        _config.addDefault("Loot.Container.Appearance.SealedParticle", true);
+        _config.addDefault("Loot.Container.Appearance.SealedSound", true);
+        _config.addDefault("Loot.Container.Appearance.EmptyBreakOnExit", true);
+
         _config.addDefault("Loot.Container.Global.Density", 0.5D);
         _config.addDefault("Loot.Container.Global.SpawnChance", 0.5D);
         _config.addDefault("Loot.Container.Global.SpawnWhenEmpty", false);
 
-        _config.addDefault("Loot.Class.Any.AllowRandomClassToBeChosen", false);
+        _config.addDefault("Loot.Class.Any.AllowRandomClassToBeChosen", true);
 
         _config.addDefault("Loot.Container.Default.Density", 0.5D);
         _config.addDefault("Loot.Container.Default.SpawnChance", 0.5D);
@@ -113,6 +131,12 @@ public class MainConfig
 
         ALLOW_RANDOM_CLASS_TO_BE_CHOSEN_IN_ANY = _config.getBoolean("Loot.Class.Any.AllowRandomClassToBeChosen");
 
+        LOOTCONTAINER_ALWAYS_BREAK_ON_EXIT = _config.getBoolean("Loot.Container.Appearance.AlwaysBreakOnExit");
+        LOOTCONTAINER_DROP_ITEMS_ON_BREAK = _config.getBoolean("Loot.Container.Appearance.DropItemsOnBreak");
+        LOOTCONTAINER_SEALED_PARTICLE = _config.getBoolean("Loot.Container.Appearance.SealedParticle");
+        LOOTCONTAINER_SEALED_SOUND = _config.getBoolean("Loot.Container.Appearance.SealedSound");
+        LOOTCONTAINER_EMPTY_BREAK_ON_EXIT = _config.getBoolean("Loot.Container.Appearance.EmptyBreakOnExit");
+
         DEFAULT_DENSITY = _config.getDouble("Loot.Container.Default.Density");
         DEFAULT_PCT_SPAWN = _config.getDouble("Loot.Container.Default.SpawnChance");
         DEFAULT_SPAWN_WHEN_EMPTY = _config.getBoolean("Loot.Container.Default.SpawnWhenEmpty");
@@ -135,7 +159,7 @@ public class MainConfig
     public void saveConfig()
     {
         // Nein es geht nicht mit der _config... Keine Ahnung warum, es ist einfach so, Informatik halt. #ProgramersDailyLife.
-        _plugin.getConfig().set("Loot.Class.Any.AllowRandomClassToBeChosen", ALLOW_RANDOM_CLASS_TO_BE_CHOSEN_IN_ANY);
+         _plugin.reloadConfig();
 
         _plugin.getConfig().set("Loot.Container.Default.Density", DEFAULT_DENSITY);
         _plugin.getConfig().set("Loot.Container.Default.SpawnChance", DEFAULT_PCT_SPAWN);

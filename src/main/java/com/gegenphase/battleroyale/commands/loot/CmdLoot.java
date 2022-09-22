@@ -1,5 +1,6 @@
 package com.gegenphase.battleroyale.commands.loot;
 
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
 import com.gegenphase.battleroyale.util.messages.Messages;
@@ -25,6 +26,7 @@ public class CmdLoot implements CommandExecutor
      */
     private final ILootContainerService _lootContainerService;
     private final ILootClassService _lootClassService;
+    private final LootSpreader _spreader;
 
     /**
      * Konstruktor der Klasse CmdLoot.
@@ -32,8 +34,9 @@ public class CmdLoot implements CommandExecutor
      * @param lootContainerService Das LootContainerService.
      * @param lootClassService     Das LootClassService.
      */
-    public CmdLoot(ILootContainerService lootContainerService, ILootClassService lootClassService)
+    public CmdLoot(ILootContainerService lootContainerService, ILootClassService lootClassService, LootSpreader spreader)
     {
+        _spreader = spreader;
         _lootContainerService = lootContainerService;
         _lootClassService = lootClassService;
     }
@@ -62,7 +65,7 @@ public class CmdLoot implements CommandExecutor
             {
                 case "container" ->
                 {
-                    new CmdLootContainerSubWerkzeug(_lootClassService,_lootContainerService).containerSubCommand(player, strings);
+                    new CmdLootContainerSubWerkzeug(_lootClassService,_lootContainerService, _spreader).containerSubCommand(player, strings);
                 }
                 case "class" ->
                 {

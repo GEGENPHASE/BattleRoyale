@@ -1,5 +1,6 @@
 package com.gegenphase.battleroyale.commands.loot;
 
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootContainerSpawner;
 import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootClass;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
@@ -21,6 +22,7 @@ import java.util.List;
  * @author GEGENPHASE
  * @version 15.09.2022
  **/
+@Deprecated
 public class LootDistributionService
 {
     /*
@@ -106,6 +108,21 @@ public class LootDistributionService
         _lootContainers.add(l);
         Bukkit.getLogger().info("generated lootcontainer " + l.toString());
     }
+
+    private int bekommeNiedrigsteKoordinate(int x, int y, int z)
+    {
+        while (_w.getBlockAt(x, y, z).getType().equals(Material.AIR))
+        {
+            y--;
+            if(y < - 64) {
+                // Errorwert -512
+                return -512;
+            }
+        }
+
+        return y + 1;
+    }
+
 
     private void generate(LootContainer l)
     {

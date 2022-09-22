@@ -70,7 +70,7 @@ public class LootContainerAddRemoveEvents implements Listener
         int z = b.getZ();
         World w = b.getLocation().getWorld();
 
-        // Wenn p sneakt, dann öfne das Editor-GUI
+        // Wenn der Spieler sneakt, dann öffne das Editor-GUI
         if (p.isSneaking())
         {
             // Wenn der Block kein Container ist, gib Fehlermeldung.

@@ -76,4 +76,9 @@ public interface ILootContainerService
      * @param remove Sollen die LootContainer gesetzt werden, oder entfernt werden. Wahr, wenn durch AIR ersetzt werden soll, also entfernt werden soll.
      */
     public void placeAllLootContainers(boolean remove);
+
+    /**
+     * Entferne alle platzierten LootContainer.
+     */
+    public void unplaceAll();
 }

@@ -1,5 +1,6 @@
 package com.gegenphase.battleroyale.commands.loot;
 
+import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,10 +56,25 @@ public class LootContainerBreakEvents implements Listener
          */
         if (_lootContainerService.isContainer(location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld()))
         {
-            if (i.isEmpty())
+
+            if (i.isEmpty() && MainConfig.LOOTCONTAINER_EMPTY_BREAK_ON_EXIT || MainConfig.LOOTCONTAINER_ALWAYS_BREAK_ON_EXIT)
             {
-                location.getBlock().setType(Material.AIR);
-                location.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
+                /*
+                 * ItemSpawn
+                 */
+                if (MainConfig.LOOTCONTAINER_DROP_ITEMS_ON_BREAK)
+                {
+                    location.getBlock().breakNaturally();
+                }
+                else
+                {
+                    location.getBlock().setType(Material.AIR);
+                }
+
+                /*
+                 * Audio Visuell
+                 */
+                location.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.2f, 1.5f);
                 location.getWorld().spawnParticle(Particle.BLOCK_CRACK, location.clone().add(0.5, 0.5, 0.5), 50, Material.CHEST.createBlockData());
                 location.getWorld().spawnParticle(Particle.BLOCK_CRACK, location.clone().add(0.5, 0.5, 0.5), 50, Material.DISPENSER.createBlockData());
                 location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location.clone().add(0.5, 0.5, 0.5), 25, 0, 0, 0, 0.05);

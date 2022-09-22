@@ -2,6 +2,7 @@ package com.gegenphase.battleroyale.loot.lootcontainer.services;
 
 import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
@@ -122,6 +123,15 @@ public class LootContainerService implements ILootContainerService
             {
                 w.getBlockAt(x, y, z).setType(Material.valueOf(l.getType().toUpperCase()));
             }
+        }
+    }
+
+    @Override
+    public void unplaceAll()
+    {
+        for(LootContainer l : _lootContainers)
+        {
+            l.getLocation().getBlock().setType(Material.AIR);
         }
     }
 }

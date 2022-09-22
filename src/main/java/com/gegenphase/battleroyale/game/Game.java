@@ -6,10 +6,9 @@ import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerSer
 import com.gegenphase.battleroyale.util.messages.Messages;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.WorldBorder;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -21,15 +20,15 @@ import org.bukkit.potion.PotionEffectType;
  **/
 public class Game
 {
+    private final Plugin _pl;
+    private final ILootContainerService _lootContainerService;
+    private final ILootClassService _lootClassService;
     /*
      * Feldvariablen
      */
     private boolean _isRunning;
-    private final Plugin _pl;
     private int _schedulerTask;
     private WorldBorder _wb;
-    private final ILootContainerService _lootContainerService;
-    private final ILootClassService _lootClassService;
 
     /**
      * Konstruktor der Klasse {@link Game}.
@@ -76,10 +75,13 @@ public class Game
                     {
                         _wb.setCenter(392, 697);
                         _wb.setSize(20);
+                        _lootContainerService.unplaceAll();
                         //teleportAllTo(_wb.getCenter().getBlockX(), _wb.getWorld().getHighestBlockYAt(_wb.getCenter().getBlockX(), _wb.getCenter().getBlockZ()), _wb.getCenter().getBlockZ());
                         teleportAllTo(391, 11, 696);
+                        clearAll(_wb.getWorld());
+                        removeDroppedItems(_wb.getWorld());
                         sendTitle("§9Phase §9§l1§8/§9§l3", "§8[§9§lBereit werden§8]");
-                        counter = 15;
+                        counter = 20;
                     }
                     else if (phase == 2)
                     {
@@ -101,6 +103,7 @@ public class Game
 
                 displayTime(counter);
             }
+
         }, 20, 20);
 
     }
@@ -149,7 +152,7 @@ public class Game
         for (Player p : Bukkit.getOnlinePlayers())
         {
             p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 10.0f, 0.625f);
-            p.playSound(p.getLocation(), Sound.ENTITY_WITHER_DEATH, 10.0f, 0.725f);
+            p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 10.0f, 0.725f);
             p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 10.0f, 1.0f);
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 10.0f, 0.9f);
             p.sendTitle(title, subtitle, 10, 60, 10);
@@ -181,6 +184,25 @@ public class Game
         for (Player player : Bukkit.getOnlinePlayers())
         {
             player.teleport(new Location(_wb.getWorld(), x, y, z));
+        }
+    }
+
+    private void clearAll(World w)
+    {
+        for (Player p : Bukkit.getOnlinePlayers())
+        {
+            p.getInventory().clear();
+        }
+    }
+
+    private void removeDroppedItems(World world)
+    {
+        for (Entity e : world.getEntities())
+        {
+            if (e.getType().equals(EntityType.DROPPED_ITEM))
+            {
+                e.remove();
+            }
         }
     }
 

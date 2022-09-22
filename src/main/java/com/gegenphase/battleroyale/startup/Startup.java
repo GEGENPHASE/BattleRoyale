@@ -2,6 +2,8 @@ package com.gegenphase.battleroyale.startup;
 
 import com.gegenphase.battleroyale.commands.game.CmdGame;
 import com.gegenphase.battleroyale.commands.loot.*;
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootContainerSpawner;
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
 import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.game.Game;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
@@ -26,6 +28,8 @@ public class Startup extends JavaPlugin
     private ILootContainerService _lootContainerService;
     private ILootClassService _lootClassService;
     private MainConfig _config;
+    private LootSpreader _spreader;
+    private LootContainerSpawner _spawner;
     @Override
     public void onEnable()
     {
@@ -38,6 +42,9 @@ public class Startup extends JavaPlugin
         _lootContainerService = new LootContainerService(this.getDataFolder());
         _lootClassService = new LootClassService(this.getDataFolder());
 
+        _spawner = new LootContainerSpawner(_lootClassService);
+        _spreader = new LootSpreader(_spawner);
+
         /*
          * Game
          */
@@ -46,7 +53,7 @@ public class Startup extends JavaPlugin
         /*
          * Commands
          */
-        CmdLoot cmdLoot = new CmdLoot(_lootContainerService, _lootClassService);
+        CmdLoot cmdLoot = new CmdLoot(_lootContainerService, _lootClassService, _spreader);
         CmdGame cmdGame = new CmdGame(game);
 
         this.getCommand(CmdLoot.CMD_LOOT).setExecutor(cmdLoot);
@@ -74,7 +81,7 @@ public class Startup extends JavaPlugin
     @Override
     public void onDisable()
     {
-        LootDistributionService.removeAll();
+        _spreader.removeAll();
         _lootContainerService.save();
         _config.saveConfig();
         super.onDisable();

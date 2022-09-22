@@ -1,5 +1,6 @@
 package com.gegenphase.battleroyale.commands.loot;
 
+import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
 import com.gegenphase.battleroyale.loot.generator.LootGeneratorService;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
@@ -19,6 +20,7 @@ public class CmdLootContainerSubWerkzeug
      */
     private final ILootClassService _lootClassService;
     private final ILootContainerService _lootContainerService;
+    private final LootSpreader _spreader;
 
     /**
      * Konstruktor der Klasse CmdLootContainerSubWerkzeug.
@@ -26,8 +28,9 @@ public class CmdLootContainerSubWerkzeug
      * @param lootClassService     Das Loot-Klassen-Service.
      * @param lootContainerService Das Loot-Container-Service.
      */
-    public CmdLootContainerSubWerkzeug(final ILootClassService lootClassService, final ILootContainerService lootContainerService)
+    public CmdLootContainerSubWerkzeug(final ILootClassService lootClassService, final ILootContainerService lootContainerService, LootSpreader spreader)
     {
+        _spreader = spreader;
         _lootClassService = lootClassService;
         _lootContainerService = lootContainerService;
     }
@@ -101,28 +104,38 @@ public class CmdLootContainerSubWerkzeug
             case "spread" ->
             {
                 // /loot container spread amount radius
-                if (args.length != 4)
+                if (args.length < 5)
                 {
-                    Messages.showCommandUsage(p, "/loot container spread <anzahl> <radius>");
+                    Messages.showCommandUsage(p, "/loot container spread <anzahl> <radius> <minimum Y> [maximum Y]");
                     return;
                 }
+
+                int maxY = -100;
 
                 /*
                  * Werte einlesen & generieren.
                  */
                 try
                 {
+
                     int amount = Integer.parseInt(args[2]);
                     int radius = Integer.parseInt(args[3]);
-                    new LootDistributionService(_lootClassService).distributeLoot(p.getLocation(), radius, amount);
+                    int minY = Integer.parseInt(args[4]);
+
+                    if (args.length >= 6)
+                    {
+                        maxY = Integer.parseInt(args[5]);
+                    }
+
+                    _spreader.spread(p.getLocation(), radius, amount, minY, maxY);
+
                     p.sendMessage(Messages.PREFIX + "Es wurden " + amount + " LootContainer generiert, sofern alle Einstellungen korrekt vorgenommen worden sind. Siehe Konsole!");
                 }
                 catch (NumberFormatException e)
                 {
-                    p.sendMessage(Messages.PREFIX + "'" + args[2] + "' und '" + args[3] + "' sind keine natürlichen Zahlen!");
+                    p.sendMessage(Messages.PREFIX + "'" + args[2] + "', '" + args[3] + "' und/oder '" + args[4] + "' sind keine natürlichen Zahlen!");
                     return;
                 }
-
 
                 // Sound
                 p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 10.0f, 0.625f);
@@ -141,7 +154,7 @@ public class CmdLootContainerSubWerkzeug
             }
             case "removespread" ->
             {
-                LootDistributionService.removeAll();
+                _spreader.removeAll();
                 p.sendMessage(Messages.PREFIX + "Alle zufällig generierten LootContainer sind entfernt worden.");
                 // Sound
                 p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 10.0f, 0.625f);
