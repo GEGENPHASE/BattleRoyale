@@ -4,7 +4,11 @@ import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.game.Game;
 import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
-import org.bukkit.*;
+import com.gegenphase.battleroyale.util.firework.FireWorkUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
@@ -21,6 +25,7 @@ public class LootContainerHighlighter
     private final Plugin _pl;
     private final ILootContainerService _lootContainerService;
     private final Game _game;
+    private final Set<LootContainer> _containers;
 
     /**
      * Konstruktor der Klasse LootContainerHighlighter.
@@ -33,6 +38,7 @@ public class LootContainerHighlighter
         _pl = pl;
         _lootContainerService = lootContainerService;
         _game = game;
+        _containers = _lootContainerService.getDefinedLootContainers();
     }
 
     /**
@@ -44,11 +50,11 @@ public class LootContainerHighlighter
         {
             if (_game.isRunning())
             {
-                Set<LootContainer> lootContainerSet = _lootContainerService.getLootContainers();
+                _containers.addAll(_lootContainerService.getAllContainers());
 
-                for (LootContainer l : lootContainerSet)
+                for (LootContainer l : _containers)
                 {
-                    if (!l.isSealed() || !isPlaced(l.getLocation()))
+                    if (!l.isSealed() || !l.isPlaced())
                     {
                         continue;
                     }
@@ -61,16 +67,11 @@ public class LootContainerHighlighter
 
                     if (MainConfig.LOOTCONTAINER_SEALED_SOUND)
                     {
-                        loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 0.25f, 2.0f);
+                        loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 0.25f, 1.23f);
                     }
+                   //FireWorkUtil.spawnFireWork(loc);
                 }
             }
-        }, 20, 20);
+        }, 20, 35);
     }
-
-    private boolean isPlaced(Location l)
-    {
-        return !l.getWorld().getBlockAt(l.getBlockX(), l.getBlockY(), l.getBlockZ()).getType().equals(Material.AIR);
-    }
-
 }

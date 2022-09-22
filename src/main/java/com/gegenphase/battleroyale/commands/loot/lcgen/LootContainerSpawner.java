@@ -4,16 +4,12 @@ import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootClass;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
-import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.inventory.Inventory;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author GEGENPHASE
@@ -46,8 +42,9 @@ public class LootContainerSpawner
      * @param y Die y-Koordinate.
      * @param z Die z-Koordinate.
      * @param w Die Welt.
+     * @return Der LootContainer der gespawnt wird.
      */
-    public void spawnLootContainer(int x, int y, int z, World w)
+    public LootContainer spawnLootContainer(int x, int y, int z, World w)
     {
         /*
          * LootContainer bekommen
@@ -76,7 +73,7 @@ public class LootContainerSpawner
          */
         if (!_lootClassService.exists(l.getLootClass()))
         {
-            return;
+            return l;
         }
 
         LootClass lootClass = _lootClassService.getLootClass(l.getLootClass());
@@ -99,7 +96,7 @@ public class LootContainerSpawner
 
         if (inv == null)
         {
-            return;
+            return l;
         }
         /*
          * Inventar bekommen
@@ -123,5 +120,6 @@ public class LootContainerSpawner
          * Inventar füllen
          */
 
+        return l;
     }
 }

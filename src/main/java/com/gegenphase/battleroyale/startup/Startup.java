@@ -5,6 +5,7 @@ import com.gegenphase.battleroyale.commands.loot.*;
 import com.gegenphase.battleroyale.commands.loot.lcgen.LootContainerSpawner;
 import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
 import com.gegenphase.battleroyale.config.MainConfig;
+import com.gegenphase.battleroyale.death.DeathEvents;
 import com.gegenphase.battleroyale.game.Game;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootclasses.services.LootClassService;
@@ -30,6 +31,7 @@ public class Startup extends JavaPlugin
     private MainConfig _config;
     private LootSpreader _spreader;
     private LootContainerSpawner _spawner;
+
     @Override
     public void onEnable()
     {
@@ -43,7 +45,7 @@ public class Startup extends JavaPlugin
         _lootClassService = new LootClassService(this.getDataFolder());
 
         _spawner = new LootContainerSpawner(_lootClassService);
-        _spreader = new LootSpreader(_spawner);
+        _spreader = new LootSpreader(_spawner, _lootContainerService);
 
         /*
          * Game
@@ -66,14 +68,15 @@ public class Startup extends JavaPlugin
          */
         new LootContainerAddRemoveEvents(this, _lootContainerService);
         new LootContainerEditorUIEvents(this, _lootContainerService, _lootClassService);
-        new LootContainerBreakEvents(this,_lootContainerService);
-        new LootContainerOpenEvents(this,_lootContainerService);
+        new LootContainerBreakEvents(this, _lootContainerService);
+        new LootContainerOpenEvents(this, _lootContainerService);
+        new DeathEvents(this, game);
 
         /*
          * Scheduler
          */
+        new LootContainerHighlighter(this, _lootContainerService, game).startHighlighter();
         new LootContainerIndicator(this, _lootContainerService).startIndicatorScheduler();
-        new LootContainerHighlighter(this,_lootContainerService,game).startHighlighter();
 
         Bukkit.getLogger().info("[BattleRoyale] gestartet!");
     }
@@ -81,7 +84,7 @@ public class Startup extends JavaPlugin
     @Override
     public void onDisable()
     {
-        _spreader.removeAll();
+        _lootContainerService.clearRandom();
         _lootContainerService.save();
         _config.saveConfig();
         super.onDisable();

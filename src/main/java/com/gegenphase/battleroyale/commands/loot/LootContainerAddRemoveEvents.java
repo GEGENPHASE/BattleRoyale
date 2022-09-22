@@ -96,7 +96,7 @@ public class LootContainerAddRemoveEvents implements Listener
             // Erstelle den LootContainer
             LootContainer l = new LootContainer(MainConfig.DEFAULT_LOOTCLASS, MainConfig.DEFAULT_PCT_SPAWN, x, y, z, w, MainConfig.DEFAULT_DENSITY, MainConfig.DEFAULT_SPAWN_WHEN_EMPTY, type);
             evt.getPlayer().sendMessage(Messages.PREFIX + "LootContainer erstellt!");
-            _lootContainerService.add(l);
+            _lootContainerService.addDefined(l);
             return;
         }
 
@@ -135,7 +135,7 @@ public class LootContainerAddRemoveEvents implements Listener
         }
 
         // Entferne den LootContainer und informiere Benutzer.
-        _lootContainerService.remove(x, y, z, w);
+        _lootContainerService.removeDefined(x, y, z, w);
         evt.getPlayer().sendMessage(Messages.PREFIX + "LootContainer entfernt!");
     }
 
@@ -164,7 +164,7 @@ public class LootContainerAddRemoveEvents implements Listener
         }
 
         // Setze alle Container.
-        _lootContainerService.placeAllLootContainers(false);
+        _lootContainerService.placeAllDefinedLootContainers();
 
         // Brich das Event ab.
         evt.setCancelled(true);

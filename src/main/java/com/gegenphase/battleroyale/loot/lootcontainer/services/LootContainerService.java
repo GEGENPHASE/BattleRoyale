@@ -1,12 +1,10 @@
 package com.gegenphase.battleroyale.loot.lootcontainer.services;
 
 import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import com.gegenphase.battleroyale.util.firework.FireWorkUtil;
 import org.bukkit.Material;
 import org.bukkit.World;
 
-import javax.lang.model.type.UnionType;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,11 +15,12 @@ import java.util.Set;
  **/
 public class LootContainerService implements ILootContainerService
 {
+    private final Set<LootContainer> _randomLootContainers;
+    private final ILootContainerFileService _fileService;
     /*
      * Feldvariablen
      */
     private Set<LootContainer> _lootContainers;
-    private final ILootContainerFileService _fileService;
 
     /**
      * Konstruktor der Klasse LootContainerService.
@@ -30,30 +29,49 @@ public class LootContainerService implements ILootContainerService
      */
     public LootContainerService(final File mainPath)
     {
+        _randomLootContainers = new HashSet<>();
         _fileService = new LootContainerFileService(mainPath);
         _lootContainers = _fileService.load();
     }
 
     @Override
-    public void add(final LootContainer l)
+    public void addDefined(final LootContainer l)
     {
         _lootContainers.add(l);
     }
 
     @Override
-    public void remove(final LootContainer l)
+    public void addRandom(LootContainer l)
     {
-        _lootContainers.remove(l);
+        _randomLootContainers.add(l);
     }
 
     @Override
-    public void remove(final int x, final int y, final int z, final World w)
+    public void clearRandom()
     {
-        for (LootContainer l : _lootContainers)
+        for (LootContainer l : _randomLootContainers)
+        {
+            l.getLocation().getBlock().setType(Material.AIR);
+        }
+
+        _randomLootContainers.clear();
+    }
+
+    @Override
+    public void removeDefined(final int x, final int y, final int z, final World w)
+    {
+        for (LootContainer l : getAllContainers())
         {
             if (l.getLocation().getBlockX() == x && l.getLocation().getBlockY() == y && l.getLocation().getBlockZ() == z && l.getLocation().getWorld().equals(w))
             {
-                _lootContainers.remove(l);
+                if (_randomLootContainers.contains(l))
+                {
+                    _randomLootContainers.remove(l);
+                }
+                else
+                {
+                    _lootContainers.remove(l);
+                }
                 break;
             }
         }
@@ -72,15 +90,21 @@ public class LootContainerService implements ILootContainerService
     }
 
     @Override
-    public Set<LootContainer> getLootContainers()
+    public Set<LootContainer> getDefinedLootContainers()
     {
         return new HashSet<LootContainer>(_lootContainers);
     }
 
     @Override
+    public Set<LootContainer> getRandomLootContainers()
+    {
+        return _randomLootContainers;
+    }
+
+    @Override
     public boolean isContainer(int x, int y, int z, World w)
     {
-        for (LootContainer c : _lootContainers)
+        for (LootContainer c : getAllContainers())
         {
             if (c.getLocation().getBlockX() == x && c.getLocation().getBlockY() == y && c.getLocation().getBlockZ() == z && c.getLocation().getWorld().equals(w))
             {
@@ -93,7 +117,7 @@ public class LootContainerService implements ILootContainerService
     @Override
     public LootContainer getContainerAt(int x, int y, int z, World w)
     {
-        for (LootContainer l : _lootContainers)
+        for (LootContainer l : getAllContainers())
         {
             if (l.getLocation().getBlockX() == x && l.getLocation().getBlockY() == y && l.getLocation().getBlockZ() == z && l.getLocation().getWorld().equals(w))
             {
@@ -105,10 +129,13 @@ public class LootContainerService implements ILootContainerService
     }
 
     @Override
-    public void placeAllLootContainers(boolean remove)
+    public void placeAllDefinedLootContainers()
     {
         for (LootContainer l : _lootContainers)
         {
+            // Erneuere das Siegel
+            l.seal();
+
             // Bekomme die Welt und die Koordinaten.
             World w = l.getLocation().getWorld();
             int x = l.getLocation().getBlockX();
@@ -117,21 +144,42 @@ public class LootContainerService implements ILootContainerService
 
             // (Er)setze den LC. Setze erstmal Luft, um die enthaltenen Gegenstände zu löschen und dann den LootContainer.
             w.getBlockAt(x, y, z).setType(Material.AIR);
-
-            // Wenn remove false ist, dann setze, sonst nicht.
-            if (!remove)
-            {
-                w.getBlockAt(x, y, z).setType(Material.valueOf(l.getType().toUpperCase()));
-            }
+            w.getBlockAt(x, y, z).setType(Material.valueOf(l.getType().toUpperCase()));
         }
     }
 
     @Override
     public void unplaceAll()
     {
-        for(LootContainer l : _lootContainers)
+        for (LootContainer l : getAllContainers())
         {
+            l.seal();
             l.getLocation().getBlock().setType(Material.AIR);
+        }
+    }
+
+    @Override
+    public Set<LootContainer> getAllContainers()
+    {
+        Set<LootContainer> container = new HashSet<>(_lootContainers);
+        container.addAll(_randomLootContainers);
+
+        return container;
+    }
+
+    /*
+     * FireWork TODO: Move somewhere else
+     */
+
+    @Override
+    public void fireWorkUnsealed()
+    {
+        for (LootContainer l : getAllContainers())
+        {
+            if (l.isPlaced())
+            {
+                FireWorkUtil.spawnFireWork(l.getLocation());
+            }
         }
     }
 }

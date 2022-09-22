@@ -52,7 +52,7 @@ public class LootContainerIndicator
                 }
 
                 // Iteriere nun durch jeden LC und erzeuge Partikel.
-                for (LootContainer lootContainer : _lootContainerService.getLootContainers())
+                for (LootContainer lootContainer : _lootContainerService.getDefinedLootContainers())
                 {
                     player.spawnParticle(Particle.SMOKE_NORMAL, lootContainer.getLocation().clone().add(0.5, 1, 0.5), 25, 0.0, 0.0, 0.0, 0.05);
                     player.spawnParticle(Particle.VILLAGER_HAPPY, lootContainer.getLocation().clone().add(0.5, 1, 0.5), 5, 0.0, 0.0, 0.0, 0.05);

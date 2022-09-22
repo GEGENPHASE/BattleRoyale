@@ -75,14 +75,14 @@ public class CmdLootContainerSubWerkzeug
             }
             case "placeall" ->
             {
-                _lootContainerService.placeAllLootContainers(false);
+                _lootContainerService.placeAllDefinedLootContainers();
                 p.sendMessage(Messages.PREFIX + "Alle LootContainer sind nun gesetzt worden.");
                 // Sound
                 p.playSound(p.getLocation(), Sound.BLOCK_SHROOMLIGHT_PLACE, 10.0f, 0.625f);
             }
             case "unplaceall" ->
             {
-                _lootContainerService.placeAllLootContainers(true);
+                _lootContainerService.unplaceAll();
                 p.sendMessage(Messages.PREFIX + "Alle LootContainer sind nun versteckt worden.");
                 // Sound
                 p.playSound(p.getLocation(), Sound.BLOCK_SHROOMLIGHT_PLACE, 10.0f, 0.625f);
@@ -154,7 +154,7 @@ public class CmdLootContainerSubWerkzeug
             }
             case "removespread" ->
             {
-                _spreader.removeAll();
+                _lootContainerService.clearRandom();
                 p.sendMessage(Messages.PREFIX + "Alle zufällig generierten LootContainer sind entfernt worden.");
                 // Sound
                 p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 10.0f, 0.625f);

@@ -1,5 +1,7 @@
 package com.gegenphase.battleroyale.commands.loot.lcgen;
 
+import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
+import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
 import com.gegenphase.battleroyale.util.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,17 +28,18 @@ public class LootSpreader
      * Feldvariablen
      */
     private final LootContainerSpawner _lootContainerSpawner;
-    private final Set<Location> _lootContainers;
+    private final ILootContainerService _lootContainerService;
 
     /**
      * Konstruktor der Klasse LootSpreader.
      *
      * @param lootContainerSpawner Der LootContainer Spawner.
+     * @param lootContainerService Das LootContainer Service.
      */
-    public LootSpreader(LootContainerSpawner lootContainerSpawner)
+    public LootSpreader(LootContainerSpawner lootContainerSpawner, ILootContainerService lootContainerService)
     {
         _lootContainerSpawner = lootContainerSpawner;
-        _lootContainers = new HashSet<>();
+        _lootContainerService = lootContainerService;
     }
 
     /**
@@ -46,7 +49,7 @@ public class LootSpreader
      * @param radius Der Radius.
      * @param amount Die Menge.
      * @param minY   Die Mindesthöhe.
-     * @param maxY Die Maximalhöhe
+     * @param maxY   Die Maximalhöhe
      */
     public void spread(final Location l, final int radius, final int amount, final int minY, int maxY)
     {
@@ -57,6 +60,7 @@ public class LootSpreader
         {
             spreadSingle(l.getWorld(), centerX, centerZ, minY, maxY, radius, 10);
         }
+
     }
 
     private void spreadSingle(final World w, final int centerX, final int centerZ, final int minY, final int maxY, final int radius, final int tries)
@@ -86,9 +90,12 @@ public class LootSpreader
             return;
         }
 
-        _lootContainers.add(new Location(w, x, y, z));
-        _lootContainerSpawner.spawnLootContainer(x, y, z, w);
+        /*
+         * Container spawnen und registrieren.
+         */
+        LootContainer spawnedRandomContainer = _lootContainerSpawner.spawnLootContainer(x, y, z, w);
 
+        _lootContainerService.addRandom(spawnedRandomContainer);
     }
 
     private int findYCoordinate(final World w, final int x, final int z, final int minY, final int maxY)
@@ -105,7 +112,7 @@ public class LootSpreader
          * mit y € [yMin, a]
          */
         boolean hasFoundAir = false;
-        int upperBound = maxY <= -100 ? w.getHighestBlockYAt(x,z) + 5 : maxY;
+        int upperBound = maxY <= -100 ? w.getHighestBlockYAt(x, z) + 5 : maxY;
         int y = new Random().nextInt(minY, upperBound);
 
         while (w.getBlockAt(x, y, z).getType().equals(Material.AIR) || !hasFoundAir)
@@ -132,19 +139,8 @@ public class LootSpreader
     private int getRandomCoord(final int center, final int radius)
     {
         /*
-         * Generiere eine zufallskoodinate x im Intervall [center - radius, center + radius)
+         * Generiere eine Zufallskoordinate x im Intervall [center - radius, center + radius)
          */
         return new Random().nextInt(center - radius, center + radius);
-    }
-
-    /**
-     * Entferne alle zufällig-platzierten LootContainer.
-     */
-    public void removeAll()
-    {
-        for (Location l : _lootContainers)
-        {
-            l.getBlock().setType(Material.AIR);
-        }
     }
 }

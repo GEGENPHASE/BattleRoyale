@@ -12,6 +12,7 @@ public class Messages
     public static final String F_HIGHLIGHT;
     public static final String PREFIX;
     public static final String F_NORMAL;
+    public static final String F_DEATH;
 
     static
     {
@@ -19,6 +20,7 @@ public class Messages
         PREFIX = "§3Battle§7Royale §8| §7";
         F_HIGHLIGHT = "§b";
         F_NORMAL = "§7";
+        F_DEATH = "§7§kX§e§o ";
     }
 
     /**

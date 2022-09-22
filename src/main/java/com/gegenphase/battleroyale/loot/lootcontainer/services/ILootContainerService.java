@@ -11,29 +11,9 @@ import java.util.Set;
  **/
 public interface ILootContainerService
 {
-    /**
-     * Registriere einen LootContainer.
-     *
-     * @param l Der LootContainers.
+    /*
+     * Dateien Laden und Speichern
      */
-    public void add(LootContainer l);
-
-    /**
-     * Entferne einen LootContainer.
-     *
-     * @param l Der zu entfernende LootContainer.
-     */
-    public void remove(LootContainer l);
-
-    /**
-     * Entferne einen LootContainer.
-     *
-     * @param x Die x-Koordinate des LootContainers
-     * @param y Die y-Koordinate des LootContainers
-     * @param z Die z-Koordinate des LootContainers
-     * @param w Die Welt, in der sich der LootContainers befindet.
-     */
-    public void remove(int x, int y, int z, World w);
 
     /**
      * Überschreibe alle bestehenden LootContainers mit denen, die von der Festplatte gelesen werden.
@@ -45,12 +25,71 @@ public interface ILootContainerService
      */
     public void save();
 
+    /*
+     * Add
+     */
+
     /**
-     * Bekomme alle LootContainers.
+     * Registriere einen LootContainer.
+     *
+     * @param l Der LootContainers.
+     */
+    public void addDefined(LootContainer l);
+
+    /**
+     * Registriere einen LootContainer als zufällig generiert.
+     *
+     * @param l Der LootContainers.
+     */
+    public void addRandom(LootContainer l);
+
+    /*
+     * Remove
+     */
+
+    /**
+     * Entferne einen LootContainer.
+     *
+     * @param x Die x-Koordinate des LootContainers
+     * @param y Die y-Koordinate des LootContainers
+     * @param z Die z-Koordinate des LootContainers
+     * @param w Die Welt, in der sich der LootContainers befindet.
+     */
+    public void removeDefined(int x, int y, int z, World w);
+
+    /**
+     * Leere alle zufälligen LootContainer.
+     */
+    public void clearRandom();
+
+    /*
+     * Get
+     */
+
+    /**
+     * Bekomme alle LootContainer, die definiert worden sind.
      *
      * @return Eine Kopie der Menge aller LootContainers.
      */
-    public Set<LootContainer> getLootContainers();
+    public Set<LootContainer> getDefinedLootContainers();
+
+    /**
+     * Bekomme alle LootContainer, die zufällig generiert worden sind.
+     *
+     * @return Eine Kopie der Menge aller LootContainer.
+     */
+    public Set<LootContainer> getRandomLootContainers();
+
+    /**
+     * Bekomme eine Kopie aller LootContainer zusammen in einer Menge.
+     *
+     * @return Alle LootContainer.
+     */
+    public Set<LootContainer> getAllContainers();
+
+    /*
+     * Check & get
+     */
 
     /**
      * Schaue, ob ein Container auch ein LootContainer ist.
@@ -70,15 +109,19 @@ public interface ILootContainerService
      */
     public LootContainer getContainerAt(int x, int y, int z, World w);
 
+    /*
+     * Place and unplace
+     */
+
     /**
      * Setze alle LootContainer in die Welt.
-     *
-     * @param remove Sollen die LootContainer gesetzt werden, oder entfernt werden. Wahr, wenn durch AIR ersetzt werden soll, also entfernt werden soll.
      */
-    public void placeAllLootContainers(boolean remove);
+    public void placeAllDefinedLootContainers();
 
     /**
      * Entferne alle platzierten LootContainer.
      */
     public void unplaceAll();
+
+    void fireWorkUnsealed();
 }

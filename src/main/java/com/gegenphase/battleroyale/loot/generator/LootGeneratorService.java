@@ -45,7 +45,7 @@ public class LootGeneratorService
      */
     public void generateLoot()
     {
-        Set<LootContainer> lootContainers = _lootContainerService.getLootContainers();
+        Set<LootContainer> lootContainers = _lootContainerService.getDefinedLootContainers();
 
         for (LootContainer l : lootContainers)
         {

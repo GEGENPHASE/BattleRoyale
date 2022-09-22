@@ -3,7 +3,6 @@ package com.gegenphase.battleroyale.game;
 import com.gegenphase.battleroyale.loot.generator.LootGeneratorService;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
-import com.gegenphase.battleroyale.util.messages.Messages;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -29,6 +28,7 @@ public class Game
     private boolean _isRunning;
     private int _schedulerTask;
     private WorldBorder _wb;
+    private int _playerAmount;
 
     /**
      * Konstruktor der Klasse {@link Game}.
@@ -44,6 +44,7 @@ public class Game
 
         _isRunning = false;
         _pl = pl;
+        _playerAmount = -1;
     }
 
     /**
@@ -56,6 +57,7 @@ public class Game
             return;
         }
         _isRunning = true;
+        _playerAmount = getPlayerAmount();
 
         _schedulerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(_pl, new Runnable()
         {
@@ -78,15 +80,17 @@ public class Game
                         _lootContainerService.unplaceAll();
                         //teleportAllTo(_wb.getCenter().getBlockX(), _wb.getWorld().getHighestBlockYAt(_wb.getCenter().getBlockX(), _wb.getCenter().getBlockZ()), _wb.getCenter().getBlockZ());
                         teleportAllTo(391, 11, 696);
-                        clearAll(_wb.getWorld());
+                        setGameMode();
+                        clearAll();
                         removeDroppedItems(_wb.getWorld());
                         sendTitle("§9Phase §9§l1§8/§9§l3", "§8[§9§lBereit werden§8]");
-                        counter = 20;
+                        counter = 15;
                     }
                     else if (phase == 2)
                     {
                         _wb.setCenter(392, 697);
                         _wb.setSize(1000, 2 * 60);
+                        playStartMusic();
                         giveStartEffects();
                         new LootGeneratorService(_lootContainerService, _lootClassService).generateLoot();
                         sendTitle("§9Phase §9§l2§8/§9§l3", "§8[§9§lLooting und Equipping§8]");
@@ -95,7 +99,7 @@ public class Game
                     else if (phase == 3)
                     {
                         _wb.setCenter(392, 697);
-                        _wb.setSize(100, 5 * 60);
+                        _wb.setSize(100, 3 * 60);
                         sendTitle("§9Phase §9§l3§8/§9§l3", "§8[§9§lDeathmatch§8]");
                         stop();
                     }
@@ -115,9 +119,22 @@ public class Game
     {
         if (_isRunning)
         {
+            _playerAmount = -1;
             Bukkit.getScheduler().cancelTask(_schedulerTask);
             _isRunning = false;
         }
+    }
+
+    /**
+     * Bekomme die Anzahl der Mitspieler, die sich für das Spiel qualifiziert haben.
+     * <p>
+     * Gibt -1 zurück, wenn das Spiel nicht gestartet wurde.
+     *
+     * @return Die Anzahl aller Teilnehmer.
+     */
+    public int getTotalAmountOfPlayers()
+    {
+        return _playerAmount;
     }
 
     private void displayTime(int current)
@@ -126,9 +143,9 @@ public class Game
         String min = String.valueOf((current / 60) % 60).length() == 1 ? "0" + (current / 60) % 60 : String.valueOf((current / 60) % 60);
         String sek = String.valueOf(current % 60).length() == 1 ? "0" + current % 60 : String.valueOf(current % 60);
 
-        String color = current <= 10 ? "§c§l" : "§e§l";
+        String color = current <= 10 ? "§c§l" : "§7§l";
 
-        String display = "Timer: " + h + ":" + min + ":" + sek;
+        String display = h + ":" + min + ":" + sek;
 
         for (Player p : Bukkit.getOnlinePlayers())
         {
@@ -136,8 +153,10 @@ public class Game
 
             if (current % 300 == 0 && current != 0)
             {
-                p.sendMessage(Messages.PREFIX + color + display);
+                //p.sendMessage(Messages.PREFIX + color + display);
+                p.sendTitle(color + display, color + "Zeit übrig", 10, 60, 10);
                 p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10.0f, 1.25f);
+                _lootContainerService.fireWorkUnsealed();
             }
 
             if (current <= 3)
@@ -187,10 +206,23 @@ public class Game
         }
     }
 
-    private void clearAll(World w)
+    private void setGameMode()
+    {
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            //if(!player.getGameMode().equals(GameMode.CREATIVE))
+            player.setGameMode(GameMode.ADVENTURE);
+        }
+    }
+
+    private void clearAll()
     {
         for (Player p : Bukkit.getOnlinePlayers())
         {
+            for (PotionEffect e : p.getActivePotionEffects())
+            {
+                p.removePotionEffect(e.getType());
+            }
             p.getInventory().clear();
         }
     }
@@ -204,6 +236,24 @@ public class Game
                 e.remove();
             }
         }
+    }
+
+    private int getPlayerAmount()
+    {
+        return Bukkit.getOnlinePlayers().size();
+    }
+
+    private void playStartMusic()
+    {
+        Location location = _wb.getCenter();
+        World w = _wb.getWorld();
+
+        int x = location.getBlockX();
+        int z = location.getBlockZ();
+        int y = w.getHighestBlockYAt(x,z);
+
+        w.playSound(new Location(w,x,y,z),Sound.MUSIC_DISC_CHIRP,0.5f,2.0f);
+
     }
 
 }

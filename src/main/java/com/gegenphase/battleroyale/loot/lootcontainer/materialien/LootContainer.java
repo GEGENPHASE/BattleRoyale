@@ -4,10 +4,6 @@ package com.gegenphase.battleroyale.loot.lootcontainer.materialien;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
-import org.bukkit.inventory.Inventory;
 
 /**
  * @author GEGENPHASE
@@ -81,6 +77,16 @@ public class LootContainer
     }
 
     /**
+     * Redefiniere die Lootklasse.
+     *
+     * @param lootclass Die neue Lootklasse.
+     */
+    public void setLootClass(String lootclass)
+    {
+        _lootClass = lootclass;
+    }
+
+    /**
      * Bekomme die Wahrscheinlichkeit, dass ein Loot-Container überhaupt spawnt.
      *
      * @return Die Wahrscheinlichkeit von 0.0 - 1.0.
@@ -88,6 +94,24 @@ public class LootContainer
     public double getPctSpawn()
     {
         return _pctSpawn;
+    }
+
+    /**
+     * Redefiniere die Spawnchance.
+     *
+     * @param newPctSpawn Die neue SpawnChance.
+     */
+    public void setPctSpawn(double newPctSpawn)
+    {
+        if (newPctSpawn > 1.0)
+        {
+            newPctSpawn = 1.0;
+        }
+        else if (newPctSpawn < 0.0)
+        {
+            newPctSpawn = 0.0;
+        }
+        _pctSpawn = newPctSpawn;
     }
 
     /**
@@ -150,24 +174,6 @@ public class LootContainer
     }
 
     /**
-     * Redefiniere die Spawnchance.
-     *
-     * @param newPctSpawn Die neue SpawnChance.
-     */
-    public void setPctSpawn(double newPctSpawn)
-    {
-        if (newPctSpawn > 1.0)
-        {
-            newPctSpawn = 1.0;
-        }
-        else if (newPctSpawn < 0.0)
-        {
-            newPctSpawn = 0.0;
-        }
-        _pctSpawn = newPctSpawn;
-    }
-
-    /**
      * Bekomme, ob der Block gesetzt wird, obwohl der LootContainer leer gespawnt wird.
      *
      * @return Wahr, wenn der Block gesetzt wird.
@@ -175,6 +181,16 @@ public class LootContainer
     public boolean getAllowSetBlockWhenEmpty()
     {
         return _spawnBlockEvenWhenEmpty;
+    }
+
+    /**
+     * Redifiniere, ob der LootContainer auch spawnen soll, wenn dieser leer gespawnt wird, oder nicht.
+     *
+     * @param b Die obengenannte Bedingung.
+     */
+    public void setAllowSetBlockWhenEmpty(boolean b)
+    {
+        _spawnBlockEvenWhenEmpty = b;
     }
 
     @Override
@@ -188,31 +204,19 @@ public class LootContainer
     }
 
     /**
-     * Redifiniere, ob der LootContainer auch spawnen soll, wenn dieser leer gespawnt wird, oder nicht.
-     *
-     * @param b Die obengenannte Bedingung.
-     */
-    public void setAllowSetBlockWhenEmpty(boolean b)
-    {
-        _spawnBlockEvenWhenEmpty = b;
-    }
-
-    /**
-     * Redefiniere die Lootklasse.
-     *
-     * @param lootclass Die neue Lootklasse.
-     */
-    public void setLootClass(String lootclass)
-    {
-        _lootClass = lootclass;
-    }
-
-    /**
-     * Redefiniere die Lootklasse.
+     * Breche das Siegel des LootContainers.
      */
     public void breakSeal()
     {
         _sealed = false;
+    }
+
+    /**
+     * Erneuere das Siegel des LootContainers.
+     */
+    public void seal()
+    {
+        _sealed = true;
     }
 
     /**
@@ -223,6 +227,16 @@ public class LootContainer
     public boolean isSealed()
     {
         return _sealed;
+    }
+
+    /**
+     * Prüfe, ob der LootContainer Luft ist, oder nicht.
+     *
+     * @return Wahr, wenn er platziert ist, also keine Luft ist und falsch, wenn nicht.
+     */
+    public boolean isPlaced()
+    {
+        return !_location.getBlock().getType().equals(Material.AIR);
     }
 
 }
