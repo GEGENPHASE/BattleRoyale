@@ -123,5 +123,5 @@ public interface ILootContainerService
      */
     public void unplaceAll();
 
-    void fireWorkUnsealed();
+    void fireWorkSealed();
 }

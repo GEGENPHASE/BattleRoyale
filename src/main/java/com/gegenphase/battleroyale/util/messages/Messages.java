@@ -12,7 +12,8 @@ public class Messages
     public static final String F_HIGHLIGHT;
     public static final String PREFIX;
     public static final String F_NORMAL;
-    public static final String F_DEATH;
+    public static final String F_OVERSEER;
+    public static final String F_TIPP;
 
     static
     {
@@ -20,7 +21,8 @@ public class Messages
         PREFIX = "§3Battle§7Royale §8| §7";
         F_HIGHLIGHT = "§b";
         F_NORMAL = "§7";
-        F_DEATH = "§7§kX§e§o ";
+        F_OVERSEER = "§7§kX§e§o ";
+        F_TIPP = "§7[§6§lTipp§7] §e";
     }
 
     /**
@@ -32,5 +34,27 @@ public class Messages
     public static void showCommandUsage(Player p, String s)
     {
         p.sendMessage(PREFIX + F_HIGHLIGHT + s);
+    }
+
+    /**
+     * Lass den Aufseher eine Nachricht senden.
+     *
+     * @param p       Der Spieler, der die Nachricht erhalten soll.
+     * @param message Die Nachricht.
+     */
+    public static void showOverseerMessage(Player p, String message)
+    {
+        p.sendMessage(F_OVERSEER + message);
+    }
+
+    /**
+     * Zeige einem Spieler einen Tipp an.
+     *
+     * @param p       Der Spieler, der die Nachricht erhalten soll.
+     * @param message Der Tipp als Nachricht.
+     */
+    public static void showTipp(Player p, String message)
+    {
+        p.sendMessage(F_TIPP + message);
     }
 }

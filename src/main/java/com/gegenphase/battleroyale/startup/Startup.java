@@ -4,8 +4,11 @@ import com.gegenphase.battleroyale.commands.game.CmdGame;
 import com.gegenphase.battleroyale.commands.loot.*;
 import com.gegenphase.battleroyale.commands.loot.lcgen.LootContainerSpawner;
 import com.gegenphase.battleroyale.commands.loot.lcgen.LootSpreader;
+import com.gegenphase.battleroyale.commands.tipp.CmdTipp;
+import com.gegenphase.battleroyale.commands.tipp.TippJoinEvents;
 import com.gegenphase.battleroyale.config.MainConfig;
 import com.gegenphase.battleroyale.death.DeathEvents;
+import com.gegenphase.battleroyale.game.DamageEvents;
 import com.gegenphase.battleroyale.game.Game;
 import com.gegenphase.battleroyale.loot.lootclasses.services.ILootClassService;
 import com.gegenphase.battleroyale.loot.lootclasses.services.LootClassService;
@@ -57,9 +60,11 @@ public class Startup extends JavaPlugin
          */
         CmdLoot cmdLoot = new CmdLoot(_lootContainerService, _lootClassService, _spreader);
         CmdGame cmdGame = new CmdGame(game);
+        CmdTipp cmdTipp = new CmdTipp();
 
         this.getCommand(CmdLoot.CMD_LOOT).setExecutor(cmdLoot);
         this.getCommand(CmdGame.CMD_GAME).setExecutor(cmdGame);
+        this.getCommand(CmdTipp.CMD_TIPP).setExecutor(cmdTipp);
 
         this.getCommand(CmdLoot.CMD_LOOT).setTabCompleter(new CmdLootTabCompleter());
 
@@ -71,6 +76,8 @@ public class Startup extends JavaPlugin
         new LootContainerBreakEvents(this, _lootContainerService);
         new LootContainerOpenEvents(this, _lootContainerService);
         new DeathEvents(this, game);
+        new DamageEvents(this, game);
+        new TippJoinEvents(this);
 
         /*
          * Scheduler

@@ -2,6 +2,7 @@ package com.gegenphase.battleroyale.loot.lootcontainer.scheduler;
 
 import com.gegenphase.battleroyale.loot.lootcontainer.materialien.LootContainer;
 import com.gegenphase.battleroyale.loot.lootcontainer.services.ILootContainerService;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -38,7 +39,7 @@ public class LootContainerOpenEvents implements Listener
     {
         Location l = evt.getInventory().getLocation();
 
-        if (l == null)
+        if (l == null || !evt.getPlayer().getGameMode().equals(GameMode.ADVENTURE))
         {
             return;
         }

@@ -172,11 +172,11 @@ public class LootContainerService implements ILootContainerService
      */
 
     @Override
-    public void fireWorkUnsealed()
+    public void fireWorkSealed()
     {
         for (LootContainer l : getAllContainers())
         {
-            if (l.isPlaced())
+            if (l.isPlaced() && l.isSealed())
             {
                 FireWorkUtil.spawnFireWork(l.getLocation());
             }

@@ -3,6 +3,7 @@ package com.gegenphase.battleroyale.loot.lootclasses.services;
 import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootClass;
 import com.gegenphase.battleroyale.loot.lootclasses.materialien.LootItem;
 import com.gegenphase.battleroyale.util.messages.Messages;
+import com.gegenphase.moreitems.startup.Startup;
 import com.shampaggon.crackshot.CSUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +42,7 @@ public class LootClassFileService
             try
             {
                 _sourcefile.createNewFile();
+                setup();
             }
             catch (IOException e)
             {
@@ -49,7 +51,6 @@ public class LootClassFileService
         }
 
         _config = YamlConfiguration.loadConfiguration(_sourcefile);
-        setup();
     }
 
     /**
@@ -279,7 +280,39 @@ public class LootClassFileService
                 lore = weapon.getItemMeta().getLore();
             }
 
+            /*
+             * MoreItems
+             */
+            if (tagsplit[0].equalsIgnoreCase("moreitems"))
+            {
+                if (Bukkit.getServer().getPluginManager().getPlugin("MoreItems") == null)
+                {
+                    Bukkit.getLogger().warning(Messages.PREFIX_LOGGER + "<<LootClassLoader>> In der Datei 'lootclasses.yml' ist ein Fehlerhafter Datensatz! Wenn der Tag 'moreitems' benutzt wird, sollte auch das Plugin MoreItems installiert sein. Rettung unmöglich. (" + rawLootItem + ")");
+                    return null;
+                }
 
+                ItemStack special = Startup.getItem(tagsplit[1].toLowerCase());
+
+                if (special == null)
+                {
+                    Bukkit.getLogger().warning(Messages.PREFIX_LOGGER + "<<LootClassLoader>> In der Datei 'lootclasses.yml' ist ein Fehlerhafter Datensatz! Das MoreItems-Item '" + tagsplit[1] + "' konnte nicht gefunden werden. Rettung unmöglich. (" + rawLootItem + ")");
+                    return null;
+                }
+
+                if (rawLootItem.contains("crackshot") || rawLootItem.contains("id"))
+                {
+                    Bukkit.getLogger().warning(Messages.PREFIX_LOGGER + "<<LootClassLoader>> In der Datei 'lootclasses.yml' ist ein Fehlerhafter Datensatz! Wenn der Tag 'moreitems' benutzt wird, sollte keine id oder auch kein CrackShot-Item angegeben werden. Überschreibe durch MoreItems-Iteminformationen. (" + rawLootItem + ")");
+                }
+
+                material = special.getType();
+                name = special.getItemMeta().getDisplayName();
+                lore = special.getItemMeta().getLore();
+
+                for (Enchantment e : special.getItemMeta().getEnchants().keySet())
+                {
+                    enchantments.add(e.getName().toLowerCase() + "#" + special.getItemMeta().getEnchants().get(e));
+                }
+            }
         }
 
         /*
@@ -371,6 +404,7 @@ public class LootClassFileService
         if (e == null)
         {
             Bukkit.getLogger().warning(Messages.PREFIX_LOGGER + "<<LootClassLoader>> In der Datei 'lootclasses.yml' ist ein Fehlerhafter Datensatz! Der Verzauberungsdatenblock '" + enchantmentRaw + "' ist ungültig, weil die Verzauberung nicht gefunden worden ist.");
+            return;
         }
 
         int lvl = 1;

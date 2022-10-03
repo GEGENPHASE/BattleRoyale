@@ -3,9 +3,9 @@ package com.gegenphase.battleroyale.death;
 import com.gegenphase.battleroyale.game.Game;
 import com.gegenphase.battleroyale.util.firework.FireWorkUtil;
 import com.gegenphase.battleroyale.util.messages.Messages;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,6 +61,7 @@ public class DeathEvents implements Listener
         }
 
         showDeathAnimation(p);
+        dropLoot(p);
         evt.setCancelled(true);
         potentiallyStopGame();
     }
@@ -68,6 +69,11 @@ public class DeathEvents implements Listener
     @EventHandler
     public void onDeathEvent(PlayerDeathEvent evt)
     {
+        if (!_game.isRunning())
+        {
+            return;
+        }
+
         Player player = evt.getPlayer();
         showDeathAnimation(player);
         potentiallyStopGame();
@@ -91,10 +97,9 @@ public class DeathEvents implements Listener
 
     private void showDeathAnimation(Player p)
     {
-        dropLoot(p);
         p.getInventory().clear();
         p.setGameMode(GameMode.SPECTATOR);
-        p.sendMessage(Messages.F_DEATH + _deathmessages.get(new Random().nextInt(_deathmessages.size())));
+        Messages.showOverseerMessage(p, _deathmessages.get(new Random().nextInt(_deathmessages.size())));
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_DEATH, 10.0f, 0.95f);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_DEATH, 10.0f, 0.95f);
         p.setHealth(20);
@@ -105,10 +110,15 @@ public class DeathEvents implements Listener
             p.removePotionEffect(e.getType());
         }
 
-        p.setVelocity(new Vector(0, 0.5, 0));
         p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20, 0, true));
         p.sendTitle("§4§lPlatz §c§l" + (getAmountOfAlivePlayers() + 1) + "§7§l/§c§l" + _game.getTotalAmountOfPlayers(), "§cDu bist gestorben!", 30, 40, 20);
         FireWorkUtil.spawnFireWork(p.getLocation());
+        p.setVelocity(new Vector(0, 1.5, 0));
+
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            player.sendMessage(Messages.F_OVERSEER + p.getName() + " ist gestorben!");
+        }
     }
 
     private int getAmountOfAlivePlayers()
@@ -151,8 +161,31 @@ public class DeathEvents implements Listener
             lastManStanding.sendTitle("§a§lGewonnen!", "§2Du bist auf Platz §e§l#1");
             lastManStanding.setHealth(20);
             lastManStanding.playSound(lastManStanding.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 10.0f, 1.2f);
+
+            placeWinnersHead(lastManStanding);
+
             _game.stop();
         }
+    }
+
+    private void placeWinnersHead(Player winner)
+    {
+        // TODO: Methode zu fixed auf einen Anwendungsfall.
+        if (winner == null)
+        {
+            return;
+        }
+
+        Block b = new Location(Bukkit.getWorld("world"), 397, 11, 701).getBlock();
+
+        if (!b.getType().equals(Material.PLAYER_HEAD))
+        {
+            return;
+        }
+
+        Skull skull = (Skull) b.getState();
+        skull.setOwningPlayer(Bukkit.getOfflinePlayer(winner.getUniqueId()));
+        skull.update();
     }
 
     private void dropLoot(Player p)

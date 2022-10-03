@@ -8,9 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * @author GEGENPHASE
@@ -113,6 +111,12 @@ public class LootSpreader
          */
         boolean hasFoundAir = false;
         int upperBound = maxY <= -100 ? w.getHighestBlockYAt(x, z) + 5 : maxY;
+
+        if (upperBound <= minY)
+        {
+            return minY - 1;
+        }
+
         int y = new Random().nextInt(minY, upperBound);
 
         while (w.getBlockAt(x, y, z).getType().equals(Material.AIR) || !hasFoundAir)

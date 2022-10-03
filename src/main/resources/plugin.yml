@@ -1,8 +1,8 @@
 name: BattleRoyale
 main: com.gegenphase.battleroyale.startup.Startup
-version: 1.0.0-10.09.2022a
+version: 1.2.1-03.10.2022a
 api-version: 1.19
-depend: [CrackShot]
+depend: [CrackShot, MoreItems]
 
 commands:
   loot:
@@ -11,9 +11,14 @@ commands:
   game:
     usage: /<command>
     permission: battleroyale.game
+  tipp:
+    usage: /<command>
+    permission: battleroyale.tipp
 
 permissions:
   battleroyale.loot:
     default: op
   battleroyale.game:
     default: op
+  battleroyale.tipp:
+    default: true

@@ -65,5 +65,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/CrackShot.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.gegenphase</groupId>
+            <artifactId>MoreItems</artifactId>
+            <version>1.0.0-23.09.2022</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/MoreItems-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
